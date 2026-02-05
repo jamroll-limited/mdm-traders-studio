@@ -1,3 +1,4 @@
-import product from "./product";
+import product from './product'
+import project from './project'
 
-export const schemaTypes = [product];
+export const schemaTypes = [product, project]

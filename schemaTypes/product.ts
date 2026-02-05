@@ -114,14 +114,7 @@ export default defineType({
           ],
         },
       ],
-      description: 'Complete product details including Features, Technical Specs, Frequency Ranges, etc.',
-    }),
-    defineField({
-      name: 'sortOrder',
-      title: 'Sort Order',
-      type: 'number',
-      description: 'Lower numbers appear first in listings',
-      initialValue: 0,
+      description: 'Use headings (H2, H3, H4) for section titles. Press Enter twice to create paragraph breaks.',
     }),
   ],
   preview: {
