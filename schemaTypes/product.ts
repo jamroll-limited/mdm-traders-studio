@@ -28,8 +28,8 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Motorola Solutions', value: 'motorola-solutions' },
-          { title: 'Cambium Networks', value: 'cambium-networks' },
+          { title: 'Portable Radio', value: 'portable-radio' },
+          { title: 'Mobile Radio', value: 'mobile-radio' },
         ],
       },
       validation: (Rule) => Rule.required(),
@@ -40,15 +40,13 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'APX Series', value: 'apx-series' },
-          { title: 'Talkabout', value: 'talkabout' },
-          { title: 'TETRA', value: 'tetra' },
+          { title: 'APX', value: 'apx' },
           { title: 'MOTOTRBO', value: 'mototrbo' },
-          { title: 'None (for Cambium Networks)', value: 'none' },
+          { title: 'TETRA', value: 'tetra' },
         ],
       },
-      description: 'Only for Motorola Solutions products. Select "None" for Cambium Networks.',
-      hidden: ({ document }) => document?.mainCategory !== 'motorola-solutions',
+      validation: (Rule) => Rule.required(),
+      description: 'Select the product sub-category (APX, MOTOTRBO, or TETRA)',
     }),
     defineField({
       name: 'images',
@@ -81,12 +79,40 @@ export default defineType({
       description: 'Add 5-6 or more product images. Mark one as the main image.',
     }),
     defineField({
+      name: 'cardDescription',
+      title: 'Short Description (For Product Card)',
+      type: 'text',
+      rows: 3,
+      description: 'Brief description shown on product cards in listings (1-2 sentences, ~50-80 characters)',
+      validation: (Rule) => Rule.required().max(150),
+    }),
+    defineField({
       name: 'shortDescription',
       title: 'Short Description (Under Title)',
-      type: 'text',
-      rows: 4,
-      description: 'Brief description shown under the product title (2-3 sentences)',
-      validation: (Rule) => Rule.required(),
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H5', value: 'h5' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+              { title: 'Underline', value: 'underline' },
+            ],
+          },
+          lists: [
+            { title: 'Bullet', value: 'bullet' },
+            { title: 'Numbered', value: 'number' },
+          ],
+        },
+      ],
+      description:
+        'Rich text shown under the product title on the detail page (2–3 short paragraphs recommended)',
+      validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
       name: 'fullDescription',
@@ -114,7 +140,7 @@ export default defineType({
           ],
         },
       ],
-      description: 'Use headings (H2, H3, H4) for section titles. Press Enter twice to create paragraph breaks.',
+      description: 'Complete product details including Features, Technical Specs, etc. Use headings (H2, H3, H4) for section titles. Press Enter twice to create paragraph breaks.',
     }),
   ],
   preview: {
@@ -130,9 +156,17 @@ export default defineType({
       // Find main image or use first image
       const mainImage = images?.find((img: any) => img.isMainImage) || images?.[0]
 
-      const categoryLabel = subCategory && subCategory !== 'none'
-        ? subCategory
-        : mainCategory || 'Uncategorized'
+      // Format category labels
+      const formatCategory = (cat: string) => {
+        if (!cat) return '';
+        return cat.split('-').map(word =>
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+      }
+
+      const categoryLabel = subCategory
+        ? `${formatCategory(mainCategory)} - ${subCategory.toUpperCase()}`
+        : formatCategory(mainCategory) || 'Uncategorized'
 
       return {
         title: title,
