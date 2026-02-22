@@ -30,6 +30,7 @@ export default defineType({
         list: [
           { title: 'Portable Radio', value: 'portable-radio' },
           { title: 'Mobile Radio', value: 'mobile-radio' },
+          { title: 'Body Camera', value: 'body-camera' },
         ],
       },
       validation: (Rule) => Rule.required(),
@@ -43,10 +44,31 @@ export default defineType({
           { title: 'APX', value: 'apx' },
           { title: 'MOTOTRBO', value: 'mototrbo' },
           { title: 'TETRA', value: 'tetra' },
+          { title: 'None (for Body Camera)', value: 'none' },
         ],
       },
-      validation: (Rule) => Rule.required(),
-      description: 'Select the product sub-category (APX, MOTOTRBO, or TETRA)',
+      validation: (Rule) => 
+        Rule.custom((subCategory, context) => {
+          const mainCategory = (context.document as any)?.mainCategory;
+          
+          // If main category is Body Camera, subCategory must be 'none' or empty
+          if (mainCategory === 'body-camera') {
+            if (subCategory && subCategory !== 'none') {
+              return 'Body Camera products should have "None" as sub-category';
+            }
+          }
+          
+          // If main category is Portable/Mobile Radio, subCategory is required
+          if (mainCategory === 'portable-radio' || mainCategory === 'mobile-radio') {
+            if (!subCategory || subCategory === 'none') {
+              return 'Portable Radio and Mobile Radio products require a sub-category (APX, MOTOTRBO, or TETRA)';
+            }
+          }
+          
+          return true;
+        }),
+      description: 'Select sub-category for Portable/Mobile Radio products. Select "None" for Body Camera products.',
+      hidden: ({ document }) => document?.mainCategory === 'body-camera',
     }),
     defineField({
       name: 'images',
@@ -164,9 +186,13 @@ export default defineType({
         ).join(' ');
       }
 
-      const categoryLabel = subCategory
-        ? `${formatCategory(mainCategory)} - ${subCategory.toUpperCase()}`
-        : formatCategory(mainCategory) || 'Uncategorized'
+      // Build category label
+      let categoryLabel = formatCategory(mainCategory) || 'Uncategorized';
+      
+      // Add subCategory if it exists and is not 'none'
+      if (subCategory && subCategory !== 'none') {
+        categoryLabel = `${categoryLabel} - ${subCategory.toUpperCase()}`;
+      }
 
       return {
         title: title,
