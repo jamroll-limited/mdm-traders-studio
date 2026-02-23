@@ -153,6 +153,9 @@ export default defineType({
           // Under Charger Accessories
           { title: 'Multi-Unit Chargers', value: 'multi-unit-chargers' },
           { title: 'Single-Unit Chargers', value: 'single-unit-chargers' },
+          // Under Batteries (for MOTOTRBO Two-Way Radios)
+          { title: 'IMPRES™ Batteries', value: 'impres-batteries' },
+          { title: 'Original Two-way Radio Batteries', value: 'original-two-way-radio-batteries' },
           // Under Portable Radios Accessories
           { title: '800M - Antenna', value: '800m-antenna' },
           { title: 'Adapters for Antennas', value: 'adapters-for-antennas' },
@@ -176,6 +179,13 @@ export default defineType({
             }
           }
 
+          if (subSubCategory === 'batteries') {
+            const valid = ['impres-batteries', 'original-two-way-radio-batteries']
+            if (subSubSubCategory && !valid.includes(subSubSubCategory)) {
+              return 'Please select IMPRES™ Batteries or Original Two-way Radio Batteries'
+            }
+          }
+
           if (subSubCategory === 'portable-radios-accessories') {
             const valid = ['800m-antenna', 'adapters-for-antennas', 'uhf-antenna-portable-radios']
             if (!subSubSubCategory || !valid.includes(subSubSubCategory)) {
@@ -196,8 +206,8 @@ export default defineType({
         'Deepest level. Required for Portable Radios Accessories and Audio Accessories. Optional for Charger Accessories (product can sit directly under it).',
       hidden: ({ document }) => {
         const sub2 = document?.subSubCategory as string | undefined
-        // Only show for subSubCategories that have a deeper level
-        return !['charger-accessories', 'portable-radios-accessories', 'audio-accessories'].includes(sub2 ?? '')
+        // Only show if subSubCategory is one of the three that have deeper levels
+        return !['batteries', 'charger-accessories', 'portable-radios-accessories', 'audio-accessories'].includes(sub2 ?? '')
       },
     }),
 
@@ -336,6 +346,8 @@ export default defineType({
         'cases-and-carry-accessories': 'Cases and Carry Accessories',
         'multi-unit-chargers': 'Multi-Unit Chargers',
         'single-unit-chargers': 'Single-Unit Chargers',
+        'impres-batteries': 'IMPRES™ Batteries',
+        'original-two-way-radio-batteries': 'Original Two-Way Radio Batteries',
         '800m-antenna': '800M - Antenna',
         'adapters-for-antennas': 'Adapters for Antennas',
         'uhf-antenna-portable-radios': 'UHF Antenna for Portable Radios',
