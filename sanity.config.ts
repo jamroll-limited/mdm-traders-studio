@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'default',
   title: 'mdm-traders',
 
-  projectId: '13zwx11y',
+  projectId: '4ddfcat7',
   dataset: 'production',
 
   plugins: [structureTool(), visionTool()],
